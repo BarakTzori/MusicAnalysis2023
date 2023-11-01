@@ -58,7 +58,6 @@ def main():
     #createPreliminaryAlbumDataCSV(access_token, output_file)
 
 
-
 if __name__ == "__main__":
     main()
 
