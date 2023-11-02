@@ -49,6 +49,8 @@ def createPreliminaryAlbumDataCSV(access_token, output_file):
     album_data['release_date'] = release_dates
     album_data['date_added'] = raw_data['Added At']
     album_data['album_name'] = raw_data['Album Name']
+    album_data['artists_names'] = raw_data['Artist Name(s)']
+    album_data['genres'] = raw_data['Genres']
     album_data.to_csv(output_file, header=True, encoding='utf-16', index=False)
 
 # collect all the information possible by making a single get album call
@@ -95,10 +97,8 @@ def collectAllAlbumTracks(filename, access_token):
 # gathers meaningful metrics from the data
 def aggregateTrackDataForAlbum(album_track_ids, access_token):
     headers = {'Authorization': f'Bearer {access_token}'}
-    get_tracks_url = f'https://api.spotify.com/v1/tracks?ids={album_track_ids}'
     get_audio_features_url = f'https://api.spotify.com/v1/audio-features?ids={album_track_ids}'
 
-    tracks_response = requests.get(url=get_tracks_url, headers=headers)
     audio_features_response = requests.get(url=get_audio_features_url, headers=headers)
 
     audio_features = audio_features_response.json()['audio_features']
@@ -108,6 +108,7 @@ def aggregateTrackDataForAlbum(album_track_ids, access_token):
     energy = getEnergy(audio_features)
     loudness = getLoudness(audio_features)
     valence = getValence(audio_features)
+    pct_major = getPctMajor(audio_features)
 
     return dict(
             danceability_mean = danceability['mean'],
@@ -119,7 +120,8 @@ def aggregateTrackDataForAlbum(album_track_ids, access_token):
             loudness_mean = loudness['mean'],
             loudness_std = loudness['std'],
             valence_mean = valence['mean'],
-            valence_std = valence['std'])
+            valence_std = valence['std'],
+            pct_major = pct_major)
 
 
 # reads in the album csv, loops over each album, and gets all songs from each and performs deep level aggregation
@@ -136,6 +138,7 @@ def aggregateAllData(filename, access_token):
     loudness_stds = []
     valence_means = []
     valence_stds = []
+    pct_majors = []
 
     for index, row in data.iterrows():
         print(index, row['album_name'])
@@ -150,6 +153,7 @@ def aggregateAllData(filename, access_token):
         loudness_stds.append(vals['loudness_std'])
         valence_means.append(vals['valence_mean'])
         valence_stds.append(vals['valence_std'])
+        pct_majors.append(vals['pct_major'])
 
 
     data['danceability_mean'] = danceability_means
@@ -162,6 +166,7 @@ def aggregateAllData(filename, access_token):
     data['loudness_std'] = loudness_stds
     data['valence_mean'] = valence_means
     data['valence_std'] = valence_stds
+    data['pct_major'] = pct_majors
 
     data.to_csv(filename, header=True, encoding='utf-16', index=False)
 
@@ -172,10 +177,10 @@ def main():
 
     #once we've run this once the csv exists, so no need to run again
     # can rerun if starting with a different raw data file
-    #createPreliminaryAlbumDataCSV(access_token, filename)
+    createPreliminaryAlbumDataCSV(access_token, filename)
 
     # put all album track ids into each column, so we can go in later and run aggregations
-    #collectAllAlbumTracks(filename, access_token)
+    collectAllAlbumTracks(filename, access_token)
 
     # put together all deep level data
     aggregateAllData(filename, access_token)

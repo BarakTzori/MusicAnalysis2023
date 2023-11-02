@@ -37,3 +37,7 @@ def getValence(audio_features):
     return dict(
             mean = np.mean(values),
             std = np.std(values))
+
+def getPctMajor(audio_features):
+    values = [d['mode'] for d in filter(None, audio_features)]
+    return sum(values)/len(values)
