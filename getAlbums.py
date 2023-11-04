@@ -170,20 +170,37 @@ def aggregateAllData(filename, access_token):
 
     data.to_csv(filename, header=True, encoding='utf-16', index=False)
 
+def combineManualCSV(filename, manual_csv_file):
+    data = pd.read_csv(filename, encoding='utf-16')
+    custom_data = pd.read_csv(manual_csv_file)
+
+    data['overall_genre'] = custom_data['overall_genre']
+    data['new'] = custom_data['new']
+    data['revisited'] = custom_data['revisited']
+    data['rating'] = custom_data['rating']
+
+    data.to_csv(filename, header=True, encoding='utf-16', index=False)
+
+
 def main():
     filename = 'album_data.csv'
+    manual_csv_file = 'custom_data.csv'
 
     access_token = getSpotifyToken()
 
     #once we've run this once the csv exists, so no need to run again
     # can rerun if starting with a different raw data file
-    createPreliminaryAlbumDataCSV(access_token, filename)
+    #createPreliminaryAlbumDataCSV(access_token, filename)
 
     # put all album track ids into each column, so we can go in later and run aggregations
-    collectAllAlbumTracks(filename, access_token)
+    #collectAllAlbumTracks(filename, access_token)
 
     # put together all deep level data
-    aggregateAllData(filename, access_token)
+    #aggregateAllData(filename, access_token)
+
+    # add in additional manual data
+    # needs to start in a separate csv for some encoding reasons
+    combineManualCSV(filename, manual_csv_file)
 
 if __name__ == "__main__":
     main()
