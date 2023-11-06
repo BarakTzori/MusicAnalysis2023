@@ -111,14 +111,24 @@ def aggregateTrackDataForAlbum(album_track_ids, access_token):
     pct_major = getPctMajor(audio_features)
 
     return dict(
+            danceability_min = danceability['minim'],
+            danceability_max = danceability['maxim'],
             danceability_mean = danceability['mean'],
             danceability_std = danceability['std'],
+            acousticness_min = acousticness['minim'],
+            acousticness_max = acousticness['maxim'],
             acousticness_mean = acousticness['mean'],
             acousticness_std = acousticness['std'],
+            energy_min = energy['minim'],
+            energy_max = energy['maxim'],
             energy_mean = energy['mean'],
             energy_std = energy['std'],
+            loudness_min = loudness['minim'],
+            loudness_max = loudness['maxim'],
             loudness_mean = loudness['mean'],
             loudness_std = loudness['std'],
+            valence_min = valence['minim'],
+            valence_max = valence['maxim'],
             valence_mean = valence['mean'],
             valence_std = valence['std'],
             pct_major = pct_major)
@@ -128,14 +138,24 @@ def aggregateTrackDataForAlbum(album_track_ids, access_token):
 def aggregateAllData(filename, access_token):
     data = pd.read_csv(filename, encoding='utf-16')
 
+    danceability_mins = []
+    danceability_maxs = []
     danceability_means = []
     danceability_stds = []
+    acousticness_mins = []
+    acousticness_maxs = []
     acousticness_means = []
     acousticness_stds = []
+    energy_mins = []
+    energy_maxs = []
     energy_means = []
     energy_stds = []
+    loudness_mins = []
+    loudness_maxs = []
     loudness_means = []
     loudness_stds = []
+    valence_mins = []
+    valence_maxs = []
     valence_means = []
     valence_stds = []
     pct_majors = []
@@ -143,27 +163,47 @@ def aggregateAllData(filename, access_token):
     for index, row in data.iterrows():
         print(index, row['album_name'])
         vals = aggregateTrackDataForAlbum(row['track_ids'], access_token)
+        danceability_mins.append(vals['danceability_min'])
+        danceability_maxs.append(vals['danceability_max'])
         danceability_means.append(vals['danceability_mean'])
         danceability_stds.append(vals['danceability_std'])
+        acousticness_mins.append(vals['acousticness_min'])
+        acousticness_maxs.append(vals['acousticness_max'])
         acousticness_means.append(vals['acousticness_mean'])
         acousticness_stds.append(vals['acousticness_std'])
+        energy_mins.append(vals['energy_min'])
+        energy_maxs.append(vals['energy_max'])
         energy_means.append(vals['energy_mean'])
         energy_stds.append(vals['energy_std'])
+        loudness_mins.append(vals['loudness_min'])
+        loudness_maxs.append(vals['loudness_max'])
         loudness_means.append(vals['loudness_mean'])
         loudness_stds.append(vals['loudness_std'])
+        valence_mins.append(vals['valence_min'])
+        valence_maxs.append(vals['valence_max'])
         valence_means.append(vals['valence_mean'])
         valence_stds.append(vals['valence_std'])
         pct_majors.append(vals['pct_major'])
 
 
+    data['danceability_min'] = danceability_mins
+    data['danceability_max'] = danceability_maxs
     data['danceability_mean'] = danceability_means
     data['danceability_std'] = danceability_stds
+    data['acousticness_min'] = acousticness_mins
+    data['acousticness_max'] = acousticness_maxs
     data['acousticness_mean'] = acousticness_means
     data['acousticness_std'] = acousticness_stds
+    data['energy_min'] = energy_mins
+    data['energy_max'] = energy_maxs
     data['energy_mean'] = energy_means
     data['energy_std'] = energy_stds
+    data['loudness_min'] = loudness_mins
+    data['loudness_max'] = loudness_maxs
     data['loudness_mean'] = loudness_means
     data['loudness_std'] = loudness_stds
+    data['valence_min'] = valence_mins
+    data['valence_max'] = valence_maxs
     data['valence_mean'] = valence_means
     data['valence_std'] = valence_stds
     data['pct_major'] = pct_majors
@@ -196,7 +236,7 @@ def main():
     #collectAllAlbumTracks(filename, access_token)
 
     # put together all deep level data
-    #aggregateAllData(filename, access_token)
+    aggregateAllData(filename, access_token)
 
     # add in additional manual data
     # needs to start in a separate csv for some encoding reasons
