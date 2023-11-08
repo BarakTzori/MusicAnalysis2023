@@ -236,7 +236,7 @@ def main():
     #collectAllAlbumTracks(filename, access_token)
 
     # put together all deep level data
-    aggregateAllData(filename, access_token)
+    #aggregateAllData(filename, access_token)
 
     # add in additional manual data
     # needs to start in a separate csv for some encoding reasons
